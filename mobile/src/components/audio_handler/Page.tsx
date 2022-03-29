@@ -20,7 +20,6 @@ import AudioRecorderPlayer, {
 } from 'react-native-audio-recorder-player';
 
 import PlayerButton from '../common/PlayerButton';
-import RNFetchBlob from 'rn-fetch-blob';
 
 interface State {
     isLoggingIn: boolean;
@@ -35,12 +34,7 @@ interface State {
 const screenWidth = Dimensions.get('screen').width;
 
 class Page extends Component<any, State> {
-    private dirs = RNFetchBlob.fs.dirs;
-    private path = Platform.select({
-      ios: 'hello.m4a',
-      android: `${this.dirs.CacheDir}/hello.mp3`,
-    });
-
+  
     private audioRecorderPlayer: AudioRecorderPlayer;
 
     constructor(props: any) {

@@ -218,6 +218,7 @@ dependencies {
 
     compile project(':react-native-audio-recorder-player')
     implementation project(':rn-fetch-blob')
+    implementation project(':react-native-fs')
 }
 
 // Run this once to be able to run the application with BUCK

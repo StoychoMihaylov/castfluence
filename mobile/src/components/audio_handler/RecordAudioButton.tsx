@@ -1,14 +1,13 @@
+import axios from 'axios';
 import React, {Component} from 'react';
 import {
-    Dimensions,
+    Image,
     PermissionsAndroid,
     Platform,
     SafeAreaView,
     StyleSheet,
     Text,
-    TouchableOpacity,
     TouchableWithoutFeedback,
-    View,
 } from 'react-native';
 import AudioRecorderPlayer, {
     AVEncoderAudioQualityIOSType,
@@ -16,16 +15,10 @@ import AudioRecorderPlayer, {
     AudioEncoderAndroidType,
     AudioSet,
     AudioSourceAndroidType,
-    PlayBackType,
     RecordBackType,
 } from 'react-native-audio-recorder-player';
 
-import PlayerButton from '../common/PlayerButton';
-
-const screenWidth = Dimensions.get('screen').width;
-
 interface State {
-    isLoggingIn: boolean;
     recordSecs: number;
     recordTime: string;
     currentPositionSec: number;
@@ -40,7 +33,6 @@ class RecordAudioButton extends Component<any, State> {
     constructor(props: any) {
         super(props);
         this.state = {
-            isLoggingIn: false,
             recordSecs: 0,
             recordTime: '00:00:00',
             currentPositionSec: 0,
@@ -97,13 +89,11 @@ class RecordAudioButton extends Component<any, State> {
             audioSet,
         );
 
-        this.audioRecorderPlayer.addRecordBackListener((e: RecordBackType) => {
-          console.log('record-back', e);
+        this.audioRecorderPlayer.addRecordBackListener((event: RecordBackType) => {
+          console.log('record-back', event);
           this.setState({
-              recordSecs: e.currentPosition,
-              recordTime: this.audioRecorderPlayer.mmssss(
-              Math.floor(e.currentPosition),
-            ),
+              recordSecs: event.currentPosition,
+              recordTime: this.audioRecorderPlayer.mmssss(Math.floor(event.currentPosition),),
           });
         });
 
@@ -118,170 +108,66 @@ class RecordAudioButton extends Component<any, State> {
         });
 
         console.log(result);
-    };
 
-    private onStartPlay = async () => {
-        const msg = await this.audioRecorderPlayer.startPlayer();
-        const volume = await this.audioRecorderPlayer.setVolume(1.0);
-        console.log(`file: ${msg}`, `volume: ${volume}`);
+        const formData = new FormData()
+        formData.append('file', {
+            uri: result,
+            name: 'sound.mp4',
+            type: 'audio/mp4',
+        })
 
-        this.audioRecorderPlayer.addPlayBackListener((event: PlayBackType) => {
-            this.setState({
-                currentPositionSec: event.currentPosition,
-                currentDurationSec: event.duration,
-                playTime: this.audioRecorderPlayer.mmssss(Math.floor(event.currentPosition)),
-                duration: this.audioRecorderPlayer.mmssss(Math.floor(event.duration)),
-            });
-        });
-    };
+        try {
+            const res = await axios.post('https://10.0.0.236:49157/upload/audio', formData);
+            console.log(res);
+        } catch (err) {
+            console.warn(err);
+        }
 
-    private onStopPlay = async () => {
-        console.log('onStopPlay');
-        this.audioRecorderPlayer.stopPlayer();
-        this.audioRecorderPlayer.removePlayBackListener();
-    };
-
-    private onStatusPress = (e: any) => {
-        const touchX = e.nativeEvent.locationX;
-        console.log(`touchX: ${touchX}`);
-        const playWidth = (this.state.currentPositionSec / this.state.currentDurationSec) * (screenWidth - 56);
-        console.log(`currentPlayWidth: ${playWidth}`);
-
-        const currentPosition = Math.round(this.state.currentPositionSec);
-
-        if (playWidth && playWidth < touchX) {
-            const addSecs = Math.round(currentPosition + 1000);
-            this.audioRecorderPlayer.seekToPlayer(addSecs);
-            console.log(`addSecs: ${addSecs}`);
-        } else {
-            const subSecs = Math.round(currentPosition - 1000);
-            this.audioRecorderPlayer.seekToPlayer(subSecs)
-            console.log(`subSecs: ${subSecs}`);
+        try {
+            const res = await axios.get('https://10.0.0.236:49157/upload/audio');
+            console.log(res)
+        } catch (err) {
+            console.warn(err);
         }
     };
 
-    public render() {
-        let playWidth =
-        (this.state.currentPositionSec / this.state.currentDurationSec) *
-        (screenWidth - 56);
-
-        if (!playWidth) {
-            playWidth = 0;
-        }
-
+    render() {
         return (
             <SafeAreaView style={styles.container}>
-                <Text style={styles.txtRecordCounter}>{this.state.recordTime}</Text>
-                <View style={styles.viewRecorder}>
-                    <View style={styles.recordBtnWrapper}>
-                        <TouchableWithoutFeedback
-                            onLongPress={() => this.onStartRecord()}
-                            onPressOut={() => this.onStopRecord()}
-                        >
-                            <View>
-                                <Text>RECORD</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </View>
-                </View>
-                <View style={styles.viewPlayer}>
-                    <TouchableOpacity
-                        style={styles.viewBarWrapper}
-                        onPress={this.onStatusPress}
-                    >
-                    <View style={styles.viewBar}>
-                        <View style={[styles.viewBarPlay, {width: playWidth}]} />
-                    </View>
-                    </TouchableOpacity>
-                    <Text style={styles.txtCounter}>
-                        {this.state.playTime} / {this.state.duration}
-                    </Text>
-                    <View style={styles.playBtnWrapper}>
-                        <PlayerButton onPress={this.onStartPlay}>Play</PlayerButton>
-                        <PlayerButton onPress={this.onStopPlay}>Stop</PlayerButton>
-                    </View>
-                </View>
+                <TouchableWithoutFeedback
+                    onLongPress={() => this.onStartRecord()}
+                    onPressOut={() => this.onStopRecord()}
+                >
+                    <Image style={styles.mic} source={require('../../../assets/icons/mic-icon.png')} />
+                </TouchableWithoutFeedback>
+
+                <Text adjustsFontSizeToFit={true} style={styles.recordTime} >{this.state.recordTime}</Text>
             </SafeAreaView>
       );
     }
-  }
-
-export default RecordAudioButton;
+}
 
 const styles: any = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#455A64',
-        flexDirection: 'column',
-        alignItems: 'center',
-      },
-      titleTxt: {
-        marginTop: 100,
-        color: 'white',
-        fontSize: 28,
-      },
-      viewRecorder: {
-        marginTop: 40,
-        width: '100%',
-        alignItems: 'center',
-      },
-      recordBtnWrapper: {
-        flexDirection: 'row',
-      },
-      viewPlayer: {
-        marginTop: 60,
-        alignSelf: 'stretch',
-        alignItems: 'center',
-      },
-      viewBarWrapper: {
-        marginTop: 28,
-        marginHorizontal: 28,
-        alignSelf: 'stretch',
-      },
-      viewBar: {
-        backgroundColor: '#ccc',
-        height: 4,
-        alignSelf: 'stretch',
-      },
-      viewBarPlay: {
-        backgroundColor: 'white',
-        height: 4,
-        width: 0,
-      },
-      playStatusTxt: {
-        marginTop: 8,
-        color: '#ccc',
-      },
-      playBtnWrapper: {
-        flexDirection: 'row',
-        marginTop: 40,
-      },
-      btn: {
-        borderColor: 'white',
-        borderWidth: 1,
-      },
-      txt: {
-        color: 'white',
-        fontSize: 14,
-        marginHorizontal: 8,
-        marginVertical: 4,
-      },
-      txtRecordCounter: {
-        marginTop: 32,
-        color: 'white',
-        fontSize: 20,
-        textAlignVertical: 'center',
-        fontWeight: '200',
-        fontFamily: 'Helvetica Neue',
-        letterSpacing: 3,
-      },
-      txtCounter: {
-        marginTop: 12,
-        color: 'white',
-        fontSize: 20,
-        textAlignVertical: 'center',
-        fontWeight: '200',
-        fontFamily: 'Helvetica Neue',
-        letterSpacing: 3,
-      },
+        height: 70,
+        width: 70,
+        borderRadius: 70/2,
+        textAlign: 'center',
+        overflow: 'hidden',
+        borderWidth: 3,
+        borderColor: 'lightblue',
+        justifyContent: 'center'
+    },
+    mic: {
+        height: 35,
+        width: 25,
+        marginLeft: 18
+    },
+    recordTime: {
+        marginLeft: 11,
+        fontSize: 11
+    }
 });
+
+export default RecordAudioButton;
+

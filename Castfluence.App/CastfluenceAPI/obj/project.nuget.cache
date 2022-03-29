@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "YArZhO1Iu11SVSiP1269KfQHuIN3HrFl0dz/x31zo7tyWVTqb44d7pMGv2KyxmX9JGMm13LzJb0Jn4ylQct1qA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\stmih\\source\\repos\\castfluence\\Castfluence.App\\CastfluenceAPI\\CastfluenceAPI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\stmih\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "C:\\Users\\stmih\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\stmih\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.10.9\\microsoft.visualstudio.azure.containers.tools.targets.1.10.9.nupkg.sha512",
+    "C:\\Users\\stmih\\.nuget\\packages\\swashbuckle.aspnetcore\\5.6.3\\swashbuckle.aspnetcore.5.6.3.nupkg.sha512",
+    "C:\\Users\\stmih\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\5.6.3\\swashbuckle.aspnetcore.swagger.5.6.3.nupkg.sha512",
+    "C:\\Users\\stmih\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\5.6.3\\swashbuckle.aspnetcore.swaggergen.5.6.3.nupkg.sha512",
+    "C:\\Users\\stmih\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\5.6.3\\swashbuckle.aspnetcore.swaggerui.5.6.3.nupkg.sha512"
+  ],
+  "logs": []
+}
