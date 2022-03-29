@@ -31,6 +31,10 @@ interface RecordState {
 
 const AudioRecorder = () => {
 
+  const navitation = useNavigation<NativeStackNavigationProp<RootStackParams>>();
+  const audioRecorderPlayer = new AudioRecorderPlayer();
+  audioRecorderPlayer.setSubscriptionDuration(0.1);
+
   const [recordState, setRecordState] = useReducer(
     (state: RecordState, newState: Partial<RecordState>) => ({
     ...state,
@@ -45,10 +49,6 @@ const AudioRecorder = () => {
       duration: '00:00:00',
     }
   );
-
-  const navitation = useNavigation<NativeStackNavigationProp<RootStackParams>>();
-  const audioRecorderPlayer = new AudioRecorderPlayer();
-  audioRecorderPlayer.setSubscriptionDuration(0.1);
 
   const onStartRecord = async () => {
     if (Platform.OS === 'android') {
